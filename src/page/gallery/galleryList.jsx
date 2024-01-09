@@ -8,7 +8,7 @@ export default function Home() {
             <div>
                 <div className={style.category}>
                     {category.map((data) => (
-                        <div >
+                        <div className='category'>
                             {data}
                         </div>
                     ))}

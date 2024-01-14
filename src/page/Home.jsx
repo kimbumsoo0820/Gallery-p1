@@ -17,13 +17,17 @@ const getWeather = (lat, lon, key) => {
     let date = today.getDate()
     let dateForm = `${year}${month}${date}`
     console.log(dateForm)
-    let url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${key}&numOfRows=10&pageNo=1&dataType=JSON&base_date=${dateForm}&base_time=0600&nx=${lat}&ny=${lon}`
+    // let url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${key}&numOfRows=10&pageNo=1&dataType=JSON&base_date=${dateForm}&base_time=0600&nx=${lat}&ny=${lon}`
+    let url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${key}&pageNo=1&numOfRows=1000&dataType=JSON&base_date=${dateForm}&base_time=0630&nx=${lat}&ny=${lon}`
     axios.get(url)
     .then((res)=> {
         console.log(res)
+        let skyData = res.data.response.body.items.item.find(x => x.category === 'SKY')
+        return skyData.fcstValue
     })
     .catch((e)=> {
         console.log('에러',e)
+        return null
     })
       
     
@@ -34,7 +38,7 @@ export default function Home() {
     const API_KEY = process.env.REACT_APP_WEATHER_API_KEY
     const x = 55
     const y = 127
-    getWeather(x,y,API_KEY)
+    let sky = getWeather(x,y,API_KEY)
 
     return (
         <div>hello</div>

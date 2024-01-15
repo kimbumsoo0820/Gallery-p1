@@ -24,8 +24,6 @@ const getDateForm = (today) => {
     return `${year}${month}${date}`
 }
 
-  
-
 const getLocation =  (setLocation) => {
     const { geolocation } = navigator;
     // 사용된 브라우저에서 지리적 위치(Geolocation)가 정의되지 않은 경우 오류로 처리합니다.
@@ -42,43 +40,39 @@ const getLocation =  (setLocation) => {
     // Geolocation API 호출
     const success = (locationData) => {
         setLocation(locationData) 
-        // location = locationData
     }
     const error = (error) => {
-        // setLocation(error.message)
         return
     }
     geolocation.getCurrentPosition(success, error, geolocationOptions);
 }
 
-
-const useWeatherData = (options = {}) => {
+const useWeatherData = () => {
   const [location, setLocation] = useState();
   const [error, setError] = useState();
   const [skyData, setSkyData] = useState();
-
   const API_KEY = process.env.REACT_APP_WEATHER_API_KEY // 개인키 호출
 
-  const getWeather =  (key) =>  {
+  const getWeather = async (key) =>  {
     const today = new Date()
     const timeForm = getTime(today)
+    const dateForm = getDateForm(today)
     
+    // 위치를 불러올 수 없는 경우를 대비
     let lat = 55 // 기본 위도값
     let lon = 127 // 기본 경도값
 
     getLocation(setLocation)
 
-    // console.log(location)
     if(location) {
         lat = Math.floor(location.coords.latitude)
         lon = Math.floor(location.coords.longitude)
     }
-    // console.log(lat, lon)
-    const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${key}&pageNo=1&numOfRows=1000&dataType=JSON&base_date=20240115&base_time=${timeForm}&nx=${lat}&ny=${lon}`
-    return axios.get(url)
+    const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${key}&pageNo=1&numOfRows=1000&dataType=JSON&base_date=${dateForm}&base_time=${timeForm}&nx=${lat}&ny=${lon}`
+    return await axios.get(url)
     .then((res)=> {
+        console.log(res)
         let skyData = res.data.response.body.items.item.find(x => x.category === 'SKY')
-        // console.log('skyData',skyData)
         return skyData.fcstValue
     })
     .catch((e)=> {
@@ -88,15 +82,11 @@ const useWeatherData = (options = {}) => {
   }
 
   useEffect(()=> {
-    async function setData() {
+    async function setData() { // axios호출하고 그 값을 useEffect안에서 setState할 때  async await을 useEffect에 넣어주어야 함
         setSkyData(await getWeather(API_KEY))
     }
-    
     setData()
-
   },[location])
-
-  
 
   return { skyData, error };
 };

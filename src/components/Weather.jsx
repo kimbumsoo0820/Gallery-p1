@@ -14,7 +14,7 @@ const calMonth = (getNum) => {
 const getTime = (today) => { // today = new Date()
     const hour = ('0' + today.getHours()).slice(-2); 
     const minute = ('0' + today.getMinutes()).slice(-2);
-    return `${hour}${minute}`
+    return `${Number(hour)-1}${minute}`
 }
 
 const getDateForm = (today) => {
@@ -50,7 +50,7 @@ const getLocation =  (setLocation) => {
 const useWeatherData = () => {
   const [location, setLocation] = useState();
   const [error, setError] = useState();
-  const [skyData, setSkyData] = useState();
+  const [weatherData, setWeatherData] = useState();
   const API_KEY = process.env.REACT_APP_WEATHER_API_KEY // 개인키 호출
 
   const getWeather = async (key) =>  {
@@ -71,9 +71,9 @@ const useWeatherData = () => {
     const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${key}&pageNo=1&numOfRows=1000&dataType=JSON&base_date=${dateForm}&base_time=${timeForm}&nx=${lat}&ny=${lon}`
     return await axios.get(url)
     .then((res)=> {
-        console.log(res)
         let skyData = res.data.response.body.items.item.find(x => x.category === 'SKY')
-        return skyData.fcstValue
+        console.log('Weather.jsx return data : ', skyData)
+        return skyData
     })
     .catch((e)=> {
         setError(e)
@@ -83,12 +83,12 @@ const useWeatherData = () => {
 
   useEffect(()=> {
     async function setData() { // axios호출하고 그 값을 useEffect안에서 setState할 때  async await을 useEffect에 넣어주어야 함
-        setSkyData(await getWeather(API_KEY))
+        setWeatherData(await getWeather(API_KEY))
     }
     setData()
   },[location])
 
-  return { skyData, error };
+  return { weatherData, error };
 };
 
 export default useWeatherData;

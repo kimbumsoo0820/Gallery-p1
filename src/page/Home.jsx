@@ -6,14 +6,16 @@ export default function Home() {
     const [skyData, setSkyData] = useState()
     const weather = getWeatherData()
     
-    useEffect( ()=> { 
-        setSkyData(weather.skyData)
+    useEffect(()=> { 
+        if(weather.weatherData){
+            setSkyData(weather.weatherData.fcstValue)
+        }
     },[weather])
     
     return (
         <>
-            <div>hello</div>
-            <div>현재 날씨 정보는{skyData?skyData:'??'}</div>
+            <div>hello world</div>
+            <div>현재 날씨 fcstValue는?{skyData?skyData:'??'}</div>
 
         </>
     )

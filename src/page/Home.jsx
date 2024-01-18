@@ -14,8 +14,6 @@ export default function Home() {
     
     return (
         <>
-            <div>hello world</div>
-            <div>{skyData?'':'Loading...'}</div>
             <div>현재 날씨 fcstValue는?{skyData?skyData:'??'}</div>
 
         </>
